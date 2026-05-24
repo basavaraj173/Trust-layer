@@ -39,7 +39,8 @@ const complaintSchema = new mongoose.Schema({
     issueType: { type: String, default: 'General Complaint' },
     severity: { type: String, enum: ['high', 'medium', 'low'], default: 'medium' },
     location: { type: String, default: 'Not specified' },
-    summary: { type: String, default: '' }
+    summary: { type: String, default: '' },
+    officerAction: { type: String, default: '' }
   },
 
   // User-provided location

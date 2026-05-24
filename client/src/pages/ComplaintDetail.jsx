@@ -231,12 +231,23 @@ export default function ComplaintDetail() {
               </div>
 
               {/* AI Summary Text */}
-              {complaint.aiSummary?.summary && (
-                <div className="bg-trust-50/50 rounded-xl p-4 border border-trust-100 mb-4">
-                  <p className="text-xs font-semibold text-trust-600 uppercase tracking-wider mb-2">
-                    🤖 AI Summary Text
+              {(complaint.aiSummary?.summary || complaint.aiSummary?.officerAction) && (
+                <div className="bg-trust-50/50 rounded-xl p-4 border border-trust-100 mb-4 space-y-4">
+                  <p className="text-xs font-semibold text-trust-600 uppercase tracking-wider mb-1">
+                    🤖 AI Insights
                   </p>
-                  <p className="text-sm text-slate-700 leading-relaxed font-semibold">{complaint.aiSummary.summary}</p>
+                  {complaint.aiSummary?.summary && (
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Issue</span>
+                      <p className="text-sm text-slate-700 leading-relaxed font-semibold">{complaint.aiSummary.summary}</p>
+                    </div>
+                  )}
+                  {complaint.aiSummary?.officerAction && (
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Officer Action</span>
+                      <p className="text-sm text-slate-700 leading-relaxed font-semibold">{complaint.aiSummary.officerAction}</p>
+                    </div>
+                  )}
                 </div>
               )}
 
