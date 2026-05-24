@@ -5,6 +5,31 @@ import { Link, useNavigate } from 'react-router-dom';
 import MicButton from '../components/MicButton';
 import { useApp } from '../context/AppContext';
 
+// Helper to merge two phrases with word-level overlap check to prevent duplication
+function mergePhrases(phrase1, phrase2) {
+  const p1 = (phrase1 || '').trim();
+  const p2 = (phrase2 || '').trim();
+  if (!p1) return p2;
+  if (!p2) return p1;
+
+  const words1 = p1.split(/\s+/);
+  const words2 = p2.split(/\s+/);
+
+  let maxOverlap = 0;
+  const minLength = Math.min(words1.length, words2.length);
+
+  for (let i = 1; i <= minLength; i++) {
+    const slice1 = words1.slice(words1.length - i).join(' ').toLowerCase();
+    const slice2 = words2.slice(0, i).join(' ').toLowerCase();
+    if (slice1 === slice2) {
+      maxOverlap = i;
+    }
+  }
+
+  const uniquePart = words2.slice(maxOverlap).join(' ');
+  return uniquePart ? `${p1} ${uniquePart}` : p1;
+}
+
 export default function VoiceReport() {
   const { language, submitComplaint, summarizeText } = useApp();
   const navigate = useNavigate();
@@ -17,6 +42,8 @@ export default function VoiceReport() {
   const [isProxy, setIsProxy] = useState(false);
   const [copied, setCopied] = useState(false);
   const recognitionRef = useRef(null);
+  const accumulatedTranscriptRef = useRef('');
+  const sessionFinalTranscriptRef = useRef('');
 
   const startRecording = useCallback(() => {
     setError('');
@@ -27,71 +54,85 @@ export default function VoiceReport() {
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = language.speechCode;
-    recognition.interimResults = true;
-    recognition.continuous = true;
-    recognition.maxAlternatives = 1;
+    accumulatedTranscriptRef.current = '';
+    sessionFinalTranscriptRef.current = '';
+    setTranscript('');
 
-    recognition.onstart = () => {
-      setMicState('recording');
-    };
+    const startSession = () => {
+      const recognition = new SpeechRecognition();
+      recognition.lang = language.speechCode;
+      recognition.interimResults = true;
+      recognition.continuous = true;
+      recognition.maxAlternatives = 1;
 
-    recognition.onresult = (event) => {
-      let finalTranscript = '';
-      let interimTranscript = '';
-      for (let i = 0; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript + ' ';
+      recognition.onstart = () => {
+        setMicState('recording');
+      };
+
+      recognition.onresult = (event) => {
+        let localFinal = '';
+        let localInterim = '';
+        for (let i = 0; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            localFinal = mergePhrases(localFinal, event.results[i][0].transcript);
+          } else {
+            localInterim = mergePhrases(localInterim, event.results[i][0].transcript);
+          }
+        }
+        sessionFinalTranscriptRef.current = localFinal;
+        const sessionTranscript = mergePhrases(localFinal, localInterim);
+        setTranscript(mergePhrases(accumulatedTranscriptRef.current, sessionTranscript));
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech error:', event.error);
+        if (event.error === 'not-allowed') {
+          setError('Microphone access denied. Please enable microphone permissions.');
+        } else if (event.error !== 'aborted') {
+          setError('Speech recognition error. Please try again.');
+        }
+        setMicState(prev => prev === 'recording' ? 'idle' : prev);
+      };
+
+      recognition.onend = () => {
+        accumulatedTranscriptRef.current = mergePhrases(accumulatedTranscriptRef.current, sessionFinalTranscriptRef.current);
+        sessionFinalTranscriptRef.current = '';
+
+        if (recognitionRef.current === recognition) {
+          try {
+            startSession();
+          } catch (e) {
+            setMicState('idle');
+          }
         } else {
-          interimTranscript += event.results[i][0].transcript;
+          setMicState(prev => prev === 'recording' ? 'idle' : prev);
         }
-      }
-      setTranscript(finalTranscript + interimTranscript);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
     };
 
-    recognition.onerror = (event) => {
-      console.error('Speech error:', event.error);
-      if (event.error === 'not-allowed') {
-        setError('Microphone access denied. Please enable microphone permissions.');
-      } else if (event.error !== 'aborted') {
-        setError('Speech recognition error. Please try again.');
-      }
-      setMicState('idle');
-    };
-
-    recognition.onend = () => {
-      // Chrome stops automatically after a pause. Restart it if still in 'recording' state
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.start();
-        } catch (e) {
-          setMicState('idle');
-        }
-      } else {
-        setMicState('idle');
-      }
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-  }, [language, micState]);
+    startSession();
+  }, [language]);
 
   const stopRecording = useCallback(async () => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      const activeRec = recognitionRef.current;
       recognitionRef.current = null;
+      activeRec.stop();
     }
     setMicState('processing');
 
     try {
-      if (transcript.trim().length < 10) {
+      const finalVal = transcript.trim();
+      if (finalVal.length < 10) {
         setError('Please speak a longer complaint. At least a few sentences.');
         setMicState('idle');
         return;
       }
 
-      const summary = await summarizeText(transcript);
+      const summary = await summarizeText(finalVal);
       setAiSummary(summary);
       setMicState('idle');
     } catch (err) {
