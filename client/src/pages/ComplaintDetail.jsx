@@ -230,6 +230,16 @@ export default function ComplaintDetail() {
                 </div>
               </div>
 
+              {/* AI Summary Text */}
+              {complaint.aiSummary?.summary && (
+                <div className="bg-trust-50/50 rounded-xl p-4 border border-trust-100 mb-4">
+                  <p className="text-xs font-semibold text-trust-600 uppercase tracking-wider mb-2">
+                    🤖 AI Summary Text
+                  </p>
+                  <p className="text-sm text-slate-700 leading-relaxed font-semibold">{complaint.aiSummary.summary}</p>
+                </div>
+              )}
+
               {/* Original Text */}
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">

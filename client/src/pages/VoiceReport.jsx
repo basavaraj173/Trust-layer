@@ -31,7 +31,7 @@ function mergePhrases(phrase1, phrase2) {
 }
 
 export default function VoiceReport() {
-  const { language, submitComplaint, summarizeText } = useApp();
+  const { language, submitComplaint, summarizeText, t } = useApp();
   const navigate = useNavigate();
 
   const [micState, setMicState] = useState('idle'); // idle, recording, processing
@@ -205,12 +205,12 @@ export default function VoiceReport() {
             <CheckCircle2 className="w-10 h-10 text-white" />
           </motion.div>
 
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Complaint Submitted!</h2>
-          <p className="text-sm text-slate-500 mb-8">Save these details to track your complaint:</p>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">{t('complaintSubmitted')}</h2>
+          <p className="text-sm text-slate-500 mb-8">{t('saveDetailsText')}</p>
 
           <div className="space-y-4 mb-8">
             <div className="bg-trust-50 rounded-2xl p-4 border border-trust-100">
-              <p className="text-xs font-semibold text-trust-500 uppercase tracking-wider mb-1">Grievance ID</p>
+              <p className="text-xs font-semibold text-trust-500 uppercase tracking-wider mb-1">{t('grievanceIdLabel')}</p>
               <div className="flex items-center justify-center gap-2">
                 <p className="text-2xl font-black text-trust-700 tracking-wider">{result.grievanceId}</p>
                 <button
@@ -223,7 +223,7 @@ export default function VoiceReport() {
             </div>
 
             <div className="bg-amber-50 rounded-2xl p-4 border border-amber-100">
-              <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-1">Secret PIN</p>
+              <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-1">{t('secretPinLabel')}</p>
               <p className="text-2xl font-black text-amber-700 tracking-[0.3em]">{result.pin}</p>
             </div>
           </div>
@@ -234,13 +234,13 @@ export default function VoiceReport() {
               className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-trust-700 to-trust-500 text-white font-semibold shadow-md hover:shadow-lg transition-all"
             >
               <Shield className="w-4 h-4" />
-              Track My Complaint
+              {t('trackMyComplaint')}
             </Link>
             <Link
               to="/"
               className="text-sm text-slate-500 hover:text-trust-600 font-medium transition-colors"
             >
-              Back to Home
+              {t('backToHome')}
             </Link>
           </div>
         </motion.div>
@@ -255,12 +255,12 @@ export default function VoiceReport() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-trust-600 mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            {t('backToHome')}
           </Link>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-2">
-            🎤 Voice <span className="gradient-text">Report</span>
+            🎤 {t('voiceReportTitle').split(' ')[0]} <span className="gradient-text">{t('voiceReportTitle').split(' ')[1] || ''}</span>
           </h1>
-          <p className="text-slate-500">Speak your complaint in {language.label}. Our AI will structure it for you.</p>
+          <p className="text-slate-500">{t('voiceReportDesc').replace('{lang}', language.label)}</p>
         </motion.div>
 
         {/* Mic Area */}
@@ -297,7 +297,7 @@ export default function VoiceReport() {
               className="w-full mt-4"
             >
               <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
-                Your Speech (Transcript)
+                {t('descriptionLabel')}
               </label>
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
                 <p className="text-sm text-slate-700 leading-relaxed">{transcript}</p>
@@ -315,7 +315,7 @@ export default function VoiceReport() {
                 className="w-5 h-5 rounded-md border-2 border-slate-300 text-trust-600 focus:ring-trust-500 cursor-pointer"
               />
               <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
-                I am reporting on behalf of someone else (proxy report)
+                {t('proxyReportLabel')}
               </span>
             </label>
           </div>
@@ -332,14 +332,14 @@ export default function VoiceReport() {
             >
               <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-trust-600" />
-                AI Summary
+                {t('trackTitle').split(' ')[1]} Summary
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Tag className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Issue Type</span>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{t('originalComplaint')}</span>
                   </div>
                   <p className="text-sm font-semibold text-slate-700">{aiSummary.issueType}</p>
                 </div>
@@ -347,7 +347,7 @@ export default function VoiceReport() {
                 <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Gauge className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Severity</span>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{t('allSeverity').split(' ')[1] || 'Severity'}</span>
                   </div>
                   <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold border ${severityColors[aiSummary.severity]}`}>
                     {aiSummary.severity?.toUpperCase()}
@@ -357,7 +357,7 @@ export default function VoiceReport() {
                 <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <div className="flex items-center gap-1.5 mb-1">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Location</span>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{t('locationLabel')}</span>
                   </div>
                   <p className="text-sm font-semibold text-slate-700">{aiSummary.location}</p>
                 </div>
@@ -369,7 +369,7 @@ export default function VoiceReport() {
                 className="w-full mt-6 px-6 py-3.5 rounded-xl bg-gradient-to-r from-trust-700 to-trust-500 text-white font-semibold text-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 id="submit-voice-complaint"
               >
-                {micState === 'processing' ? 'Submitting...' : 'Submit Complaint'}
+                {micState === 'processing' ? t('submitting') : t('submitComplaint')}
               </button>
             </motion.div>
           )}

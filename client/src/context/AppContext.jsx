@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import axios from 'axios';
+import { translations } from '../utils/translations';
 
 const AppContext = createContext(null);
 
@@ -19,6 +20,12 @@ export function AppProvider({ children }) {
   const [language, setLanguage] = useState(LANGUAGES[0]);
   const [adminToken, setAdminToken] = useState(localStorage.getItem('trustlayer_admin_token'));
   const [loading, setLoading] = useState(false);
+
+  const t = useCallback((key) => {
+    const langCode = language?.code || 'en';
+    const langDict = translations[langCode] || translations['en'];
+    return langDict[key] || translations['en'][key] || key;
+  }, [language]);
 
   // ── API Methods ──
   const submitComplaint = useCallback(async (formData) => {
@@ -120,6 +127,7 @@ export function AppProvider({ children }) {
     language,
     setLanguage,
     languages: LANGUAGES,
+    t,
     adminToken,
     loading,
     setLoading,

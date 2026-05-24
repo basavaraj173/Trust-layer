@@ -6,7 +6,7 @@ import StatusTimeline from '../components/StatusTimeline';
 import { useApp } from '../context/AppContext';
 
 export default function Track() {
-  const { trackComplaint, validateComplaint } = useApp();
+  const { trackComplaint, validateComplaint, t } = useApp();
 
   const [grievanceId, setGrievanceId] = useState('');
   const [pin, setPin] = useState('');
@@ -65,12 +65,12 @@ export default function Track() {
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-trust-600 mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Home
+            <ArrowLeft className="w-4 h-4" /> {t('backToHome')}
           </Link>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-2">
-            🔍 Track <span className="gradient-text">Complaint</span>
+            🔍 {t('trackTitle').split(' ')[0]} <span className="gradient-text">{t('trackTitle').split(' ')[1] || ''}</span>
           </h1>
-          <p className="text-slate-500">Enter your Grievance ID and PIN to check your complaint status.</p>
+          <p className="text-slate-500">{t('trackDesc')}</p>
         </motion.div>
 
         {/* Search Form */}
@@ -83,7 +83,7 @@ export default function Track() {
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Grievance ID</label>
+              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">{t('grievanceIdLabel')}</label>
               <input
                 type="text"
                 value={grievanceId}
@@ -94,12 +94,12 @@ export default function Track() {
               />
             </div>
             <div className="w-full sm:w-36">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">PIN</label>
+              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">{t('secretPinLabel')}</label>
               <input
                 type="password"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
-                placeholder="••••"
+                placeholder={t('pinPlaceholder')}
                 maxLength={4}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-trust-400 focus:ring-2 focus:ring-trust-100 outline-none text-sm font-medium text-slate-700 placeholder:text-slate-400 tracking-[0.3em] text-center transition-all"
                 id="track-pin"
@@ -115,10 +115,10 @@ export default function Track() {
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
-                    Searching...
+                    {t('searching')}
                   </span>
                 ) : (
-                  <span className="flex items-center gap-2"><Search className="w-4 h-4" /> Track</span>
+                  <span className="flex items-center gap-2"><Search className="w-4 h-4" /> {t('searchButton')}</span>
                 )}
               </button>
             </div>
@@ -150,7 +150,7 @@ export default function Track() {
                       {complaint.grievanceId}
                     </span>
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${severityColors[complaint.aiSummary?.severity]}`}>
-                      {complaint.aiSummary?.severity}
+                      {t(complaint.aiSummary?.severity + 'Severity') || complaint.aiSummary?.severity}
                     </span>
                   </div>
                   <span className="text-xs text-slate-400">
@@ -163,29 +163,29 @@ export default function Track() {
                   <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
                     <Tag className="w-4 h-4 text-trust-500" />
                     <div>
-                      <p className="text-[10px] text-slate-400 font-semibold uppercase">Issue</p>
+                      <p className="text-[10px] text-slate-400 font-semibold uppercase">{t('originalComplaint')}</p>
                       <p className="text-sm font-semibold text-slate-700">{complaint.aiSummary?.issueType}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
                     <MapPin className="w-4 h-4 text-trust-500" />
                     <div>
-                      <p className="text-[10px] text-slate-400 font-semibold uppercase">Location</p>
+                      <p className="text-[10px] text-slate-400 font-semibold uppercase">{t('locationLabel')}</p>
                       <p className="text-sm font-semibold text-slate-700">{complaint.location || 'N/A'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
                     <Users className="w-4 h-4 text-trust-500" />
                     <div>
-                      <p className="text-[10px] text-slate-400 font-semibold uppercase">Validations</p>
-                      <p className="text-sm font-semibold text-slate-700">{complaint.validations || 0} people confirmed</p>
+                      <p className="text-[10px] text-slate-400 font-semibold uppercase">{t('validationTitle')}</p>
+                      <p className="text-sm font-semibold text-slate-700">{complaint.validations || 0} {t('peopleConfirmedText')}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Original Text */}
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Original Complaint</p>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('originalComplaint')}</p>
                   <p className="text-sm text-slate-600 leading-relaxed">{complaint.originalText}</p>
                 </div>
 
@@ -199,7 +199,7 @@ export default function Track() {
 
               {/* Status Timeline */}
               <div className="glass-card p-6">
-                <h3 className="text-sm font-bold text-slate-800 mb-4">📍 Status Timeline</h3>
+                <h3 className="text-sm font-bold text-slate-800 mb-4">📍 {t('timelineTitle')}</h3>
                 <StatusTimeline
                   currentStatus={complaint.status}
                   statusHistory={complaint.statusHistory || []}
@@ -209,7 +209,7 @@ export default function Track() {
               {/* Admin Notes */}
               {complaint.notes && complaint.notes.length > 0 && (
                 <div className="glass-card p-6">
-                  <h3 className="text-sm font-bold text-slate-800 mb-4">📌 Admin Notes</h3>
+                  <h3 className="text-sm font-bold text-slate-800 mb-4">{t('adminNotesTitle')}</h3>
                   <div className="space-y-3">
                     {complaint.notes.map((note, idx) => (
                       <div key={idx} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
@@ -226,7 +226,7 @@ export default function Track() {
               {/* Proof Images */}
               {complaint.proofImages && complaint.proofImages.length > 0 && (
                 <div className="glass-card p-6">
-                  <h3 className="text-sm font-bold text-slate-800 mb-4">📸 Proof of Action</h3>
+                  <h3 className="text-sm font-bold text-slate-800 mb-4">{t('proofTitle')}</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {complaint.proofImages.map((img, idx) => (
                       <img key={idx} src={img} alt={`Proof ${idx + 1}`}
@@ -238,7 +238,7 @@ export default function Track() {
 
               {/* Community Validation */}
               <div className="glass-card p-6">
-                <h3 className="text-sm font-bold text-slate-800 mb-4">🤝 Community Validation</h3>
+                <h3 className="text-sm font-bold text-slate-800 mb-4">🤝 {t('validationTitle')}</h3>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
@@ -246,7 +246,7 @@ export default function Track() {
                     </div>
                     <div>
                       <p className="text-2xl font-black text-slate-800">{complaint.validations || 0}</p>
-                      <p className="text-xs text-slate-500">People confirmed this issue</p>
+                      <p className="text-xs text-slate-500">{t('peopleConfirmedText')}</p>
                     </div>
                   </div>
                   <button
@@ -259,11 +259,10 @@ export default function Track() {
                     } disabled:opacity-50`}
                     id="validate-complaint"
                   >
-                    {validated ? '✓ Validated' : validating ? 'Validating...' : 'Confirm Issue'}
+                    {validated ? `✓ ${t('validatedBtn')}` : validating ? `${t('searching')}...` : t('confirmIssueBtn')}
                   </button>
                 </div>
               </div>
-
 
             </motion.div>
           )}

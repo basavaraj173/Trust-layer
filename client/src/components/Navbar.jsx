@@ -7,17 +7,17 @@ import { useApp } from '../context/AppContext';
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const { language, setLanguage, languages, adminToken } = useApp();
+  const { language, setLanguage, languages, adminToken, t } = useApp();
   const location = useLocation();
 
   const isAdmin = location.pathname.startsWith('/admin');
 
   const navLinks = [
-    { to: '/', label: 'Home', icon: Home },
-    { to: '/voice-report', label: 'Report', icon: Mic },
-    { to: '/track', label: 'Track', icon: Search },
-    { to: '/community', label: 'Community Feed', icon: Users },
-    { to: adminToken ? '/admin/dashboard' : '/admin', label: 'Admin', icon: Lock },
+    { to: '/', labelKey: 'navHome', icon: Home },
+    { to: '/voice-report', labelKey: 'navReport', icon: Mic },
+    { to: '/track', labelKey: 'navTrack', icon: Search },
+    { to: '/community', labelKey: 'navCommunity', icon: Users },
+    { to: adminToken ? '/admin/dashboard' : '/admin', labelKey: 'navAdmin', icon: Lock },
   ];
 
   return (
@@ -37,7 +37,7 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(({ to, label, icon: Icon }) => {
+            {navLinks.map(({ to, labelKey, icon: Icon }) => {
               const active = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
               return (
                 <Link
@@ -50,7 +50,7 @@ export default function Navbar() {
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  {label}
+                  {t(labelKey)}
                 </Link>
               );
             })}
@@ -59,38 +59,40 @@ export default function Navbar() {
           {/* Right side: Language + Mobile Toggle */}
           <div className="flex items-center gap-2">
             {/* Language Selector */}
-            <div className="relative">
-              <button
-                onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                id="language-selector"
-              >
-                <Globe className="w-4 h-4" />
-                <span className="hidden sm:inline">{language.label}</span>
-              </button>
-              <AnimatePresence>
-                {langOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                    className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50"
-                  >
-                    {languages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => { setLanguage(lang); setLangOpen(false); }}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-trust-50 transition-colors ${
-                          language.code === lang.code ? 'bg-trust-50 text-trust-700 font-semibold' : 'text-slate-700'
-                        }`}
-                      >
-                        {lang.label}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            {!isAdmin && (
+              <div className="relative">
+                <button
+                  onClick={() => setLangOpen(!langOpen)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  id="language-selector"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span className="hidden sm:inline">{language.label}</span>
+                </button>
+                <AnimatePresence>
+                  {langOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                      className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50"
+                    >
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => { setLanguage(lang); setLangOpen(false); }}
+                          className={`w-full text-left px-4 py-2.5 text-sm hover:bg-trust-50 transition-colors ${
+                            language.code === lang.code ? 'bg-trust-50 text-trust-700 font-semibold' : 'text-slate-700'
+                          }`}
+                        >
+                          {lang.label}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
             {/* Mobile Toggle */}
             <button
@@ -114,7 +116,7 @@ export default function Navbar() {
             className="md:hidden overflow-hidden border-t border-slate-100 bg-white/95 backdrop-blur-xl"
           >
             <div className="px-4 py-3 space-y-1">
-              {navLinks.map(({ to, label, icon: Icon }) => {
+              {navLinks.map(({ to, labelKey, icon: Icon }) => {
                 const active = location.pathname === to;
                 return (
                   <Link
@@ -128,7 +130,7 @@ export default function Navbar() {
                     }`}
                   >
                     <Icon className="w-5 h-5" />
-                    {label}
+                    {t(labelKey)}
                   </Link>
                 );
               })}

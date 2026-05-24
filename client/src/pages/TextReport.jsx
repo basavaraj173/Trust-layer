@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 
 export default function TextReport() {
-  const { submitComplaint, language } = useApp();
+  const { submitComplaint, language, t } = useApp();
 
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
@@ -91,12 +91,12 @@ export default function TextReport() {
             <CheckCircle2 className="w-10 h-10 text-white" />
           </motion.div>
 
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Complaint Submitted!</h2>
-          <p className="text-sm text-slate-500 mb-8">Save these details to track your complaint:</p>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">{t('complaintSubmitted')}</h2>
+          <p className="text-sm text-slate-500 mb-8">{t('saveDetailsText')}</p>
 
           <div className="space-y-4 mb-8">
             <div className="bg-trust-50 rounded-2xl p-4 border border-trust-100">
-              <p className="text-xs font-semibold text-trust-500 uppercase tracking-wider mb-1">Grievance ID</p>
+              <p className="text-xs font-semibold text-trust-500 uppercase tracking-wider mb-1">{t('grievanceIdLabel')}</p>
               <div className="flex items-center justify-center gap-2">
                 <p className="text-2xl font-black text-trust-700 tracking-wider">{result.grievanceId}</p>
                 <button onClick={() => copyToClipboard(result.grievanceId)} className="p-1.5 rounded-lg hover:bg-trust-100 transition-colors">
@@ -106,16 +106,16 @@ export default function TextReport() {
             </div>
 
             <div className="bg-amber-50 rounded-2xl p-4 border border-amber-100">
-              <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-1">Secret PIN</p>
+              <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-1">{t('secretPinLabel')}</p>
               <p className="text-2xl font-black text-amber-700 tracking-[0.3em]">{result.pin}</p>
             </div>
           </div>
 
           <div className="flex flex-col gap-3">
             <Link to="/track" className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-trust-700 to-trust-500 text-white font-semibold shadow-md">
-              <Shield className="w-4 h-4" /> Track My Complaint
+              <Shield className="w-4 h-4" /> {t('trackMyComplaint')}
             </Link>
-            <Link to="/" className="text-sm text-slate-500 hover:text-trust-600 font-medium">Back to Home</Link>
+            <Link to="/" className="text-sm text-slate-500 hover:text-trust-600 font-medium">{t('backToHome')}</Link>
           </div>
         </motion.div>
       </div>
@@ -127,12 +127,12 @@ export default function TextReport() {
       <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-trust-600 mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Home
+            <ArrowLeft className="w-4 h-4" /> {t('backToHome')}
           </Link>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-2">
-            📝 Text <span className="gradient-text">Report</span>
+            📝 {t('textReportTitle').split(' ')[0]} <span className="gradient-text">{t('textReportTitle').split(' ')[1] || ''}</span>
           </h1>
-          <p className="text-slate-500">Describe your complaint in detail. Add location and images.</p>
+          <p className="text-slate-500">{t('textReportDesc')}</p>
         </motion.div>
 
         <motion.form
@@ -155,12 +155,12 @@ export default function TextReport() {
           {/* Description */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-              <FileText className="w-4 h-4 text-trust-600" /> Description *
+              <FileText className="w-4 h-4 text-trust-600" /> {t('descriptionLabel')} *
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the issue in detail. What happened? Where? When? How is it affecting people?"
+              placeholder={t('descriptionPlaceholder')}
               rows={5}
               className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-trust-400 focus:ring-2 focus:ring-trust-100 outline-none text-sm text-slate-700 placeholder:text-slate-400 resize-none transition-all"
               id="complaint-description"
@@ -171,13 +171,13 @@ export default function TextReport() {
           {/* Location */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-              <MapPin className="w-4 h-4 text-trust-600" /> Location
+              <MapPin className="w-4 h-4 text-trust-600" /> {t('locationLabel')}
             </label>
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g., Rajaji Nagar, Bangalore"
+              placeholder={t('locationPlaceholder')}
               className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-trust-400 focus:ring-2 focus:ring-trust-100 outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
               id="complaint-location"
             />
@@ -186,7 +186,7 @@ export default function TextReport() {
           {/* Image Upload */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-              <Image className="w-4 h-4 text-trust-600" /> Upload Images (optional)
+              <Image className="w-4 h-4 text-trust-600" /> {t('uploadImagesLabel')}
             </label>
             <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-trust-300 transition-colors cursor-pointer relative">
               <input
@@ -198,8 +198,8 @@ export default function TextReport() {
                 id="image-upload"
               />
               <Upload className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-sm text-slate-500">Click or drag images here</p>
-              <p className="text-xs text-slate-400 mt-1">Max 5 images, 10MB each</p>
+              <p className="text-sm text-slate-500">{t('dragImagesText')}</p>
+              <p className="text-xs text-slate-400 mt-1">{t('maxImagesLimit')}</p>
             </div>
 
             {/* Image Previews */}
@@ -230,7 +230,7 @@ export default function TextReport() {
               className="w-5 h-5 rounded-md border-2 border-slate-300 text-trust-600 focus:ring-trust-500 cursor-pointer"
             />
             <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
-              Reporting on behalf of someone else
+              {t('proxyReportLabel')}
             </span>
           </label>
 
@@ -241,7 +241,7 @@ export default function TextReport() {
             className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-r from-trust-700 to-trust-500 text-white font-semibold text-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             id="submit-text-complaint"
           >
-            {loading ? 'Submitting...' : 'Submit Complaint'}
+            {loading ? t('submitting') : t('submitComplaint')}
           </button>
         </motion.form>
       </div>

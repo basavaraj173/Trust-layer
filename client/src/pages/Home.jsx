@@ -2,44 +2,47 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mic, FileText, Search, Shield, ArrowRight, Users, CheckCircle2, Lock, Zap } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
 export default function Home() {
+  const { t } = useApp();
+
   const features = [
     {
       icon: Mic,
-      title: 'Voice First',
-      desc: 'Speak in your language. AI converts your voice to a structured complaint.',
+      title: t('feature1Title'),
+      desc: t('feature1Desc'),
       color: 'from-blue-500 to-indigo-600',
       bg: 'bg-blue-50',
     },
     {
       icon: Lock,
-      title: '100% Anonymous',
-      desc: 'No login required. Get an anonymous ID and PIN to track your complaint.',
+      title: t('feature2Title'),
+      desc: t('feature2Desc'),
       color: 'from-violet-500 to-purple-600',
       bg: 'bg-violet-50',
     },
     {
       icon: Shield,
-      title: 'Tamper-Proof',
-      desc: 'Every action is logged with SHA-256 hash chains. Nobody can alter records.',
+      title: t('feature3Title'),
+      desc: t('feature3Desc'),
       color: 'from-emerald-500 to-teal-600',
       bg: 'bg-emerald-50',
     },
     {
       icon: Users,
-      title: 'Community Validated',
-      desc: 'Neighbors can confirm issues, adding urgency and credibility.',
+      title: t('feature4Title'),
+      desc: t('feature4Desc'),
       color: 'from-amber-500 to-orange-600',
       bg: 'bg-amber-50',
     },
   ];
 
   const stats = [
-    { value: '10,000+', label: 'Complaints Filed' },
-    { value: '87%', label: 'Resolution Rate' },
-    { value: '48hrs', label: 'Avg. Response Time' },
-    { value: '500+', label: 'Wards Covered' },
+    { value: '10,000+', label: t('statsComplaintsFiled') },
+    { value: '87%', label: t('statsResolutionRate') },
+    { value: '48hrs', label: t('statsAvgResponseTime') },
+    { value: '500+', label: t('statsWardsCovered') },
   ];
 
   return (
@@ -60,21 +63,19 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-trust-50 border border-trust-200 text-trust-700 text-sm font-medium mb-6">
                 <Zap className="w-4 h-4" />
-                India's Voice-First Civic Platform
+                {t('heroBadge')}
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-tight mb-6">
-                Your Voice
-                <span className="gradient-text"> Matters.</span>
+                {t('heroTitlePart1')}
+                <span className="gradient-text">{t('heroTitlePart2')}</span>
                 <br />
-                Your Identity
-                <span className="gradient-text-gold"> Doesn't.</span>
+                {t('heroTitlePart3')}
+                <span className="gradient-text-gold">{t('heroTitlePart4')}</span>
               </h1>
 
               <p className="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-                Report civic issues anonymously in your local language.
-                Track progress with tamper-proof transparency.
-                Let your community rally behind real problems.
+                {t('heroSubtitle')}
               </p>
             </motion.div>
 
@@ -91,7 +92,7 @@ export default function Home() {
                 id="cta-voice-report"
               >
                 <Mic className="w-6 h-6" />
-                Report by Voice
+                {t('btnReportVoice')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
@@ -101,7 +102,7 @@ export default function Home() {
                 id="cta-text-report"
               >
                 <FileText className="w-5 h-5 text-trust-600" />
-                Report by Text
+                {t('btnReportText')}
               </Link>
 
               <Link
@@ -110,7 +111,7 @@ export default function Home() {
                 id="cta-community"
               >
                 <Users className="w-5 h-5 text-trust-600" />
-                Community Feed
+                {t('btnCommunityFeed')}
               </Link>
 
               <Link
@@ -119,7 +120,7 @@ export default function Home() {
                 id="cta-track"
               >
                 <Search className="w-5 h-5 text-emerald-600" />
-                Track Complaint
+                {t('btnTrackComplaint')}
               </Link>
             </motion.div>
           </div>
@@ -163,10 +164,10 @@ export default function Home() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
-            Built for <span className="gradient-text">Trust & Transparency</span>
+            {t('featuresTitle')}
           </h2>
           <p className="text-slate-500 max-w-xl mx-auto">
-            Every feature designed to protect citizens and hold authorities accountable.
+            {t('featuresSubtitle')}
           </p>
         </motion.div>
 
@@ -203,15 +204,15 @@ export default function Home() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
-            How It <span className="gradient-text">Works</span>
+            {t('howItWorksTitle')}
           </h2>
         </motion.div>
 
         <div className="grid sm:grid-cols-3 gap-6">
           {[
-            { step: '01', title: 'Speak or Type', desc: 'Describe your issue by voice or text in any language.', icon: Mic },
-            { step: '02', title: 'Get Your ID', desc: 'Receive an anonymous Grievance ID and PIN instantly.', icon: Shield },
-            { step: '03', title: 'Track Progress', desc: 'Watch real-time updates with proof of action taken.', icon: CheckCircle2 },
+            { step: '01', title: t('step1Title'), desc: t('step1Desc'), icon: Mic },
+            { step: '02', title: t('step2Title'), desc: t('step2Desc'), icon: Shield },
+            { step: '03', title: t('step3Title'), desc: t('step3Desc'), icon: CheckCircle2 },
           ].map((item, idx) => (
             <motion.div
               key={item.step}
@@ -244,7 +245,7 @@ export default function Home() {
             <span className="font-bold gradient-text">TrustLayer</span>
           </div>
           <p className="text-xs text-slate-400">
-            Voice-First Anonymous Grievance System · Built for India's Citizens
+            {t('footerText')}
           </p>
         </div>
       </footer>

@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 import StatusTimeline from '../components/StatusTimeline';
 
 export default function CommunityDashboard() {
-  const { getAdminStats, getAdminComplaints, validateComplaint } = useApp();
+  const { getAdminStats, getAdminComplaints, validateComplaint, t } = useApp();
 
   const [stats, setStats] = useState(null);
   const [complaints, setComplaints] = useState([]);
@@ -118,10 +118,10 @@ export default function CommunityDashboard() {
   };
 
   const statCards = stats ? [
-    { label: 'Active Complaints', value: stats.total, icon: Users, color: 'from-trust-500 to-trust-600', bgColor: 'bg-trust-50' },
-    { label: 'High Priority Needs', value: stats.highPriority, icon: AlertTriangle, color: 'from-red-500 to-red-600', bgColor: 'bg-red-50' },
-    { label: 'In Progress Fixes', value: stats.inProgress + stats.assigned, icon: Clock, color: 'from-amber-500 to-amber-600', bgColor: 'bg-amber-50' },
-    { label: 'Resolved Community Grievances', value: stats.resolved, icon: CheckCircle2, color: 'from-emerald-500 to-emerald-600', bgColor: 'bg-emerald-50' },
+    { label: t('activeComplaints'), value: stats.total, icon: Users, color: 'from-trust-500 to-trust-600', bgColor: 'bg-trust-50' },
+    { label: t('highPriorityNeeds'), value: stats.highPriority, icon: AlertTriangle, color: 'from-red-500 to-red-600', bgColor: 'bg-red-50' },
+    { label: t('inProgressFixes'), value: stats.inProgress + stats.assigned, icon: Clock, color: 'from-amber-500 to-amber-600', bgColor: 'bg-amber-50' },
+    { label: t('resolvedCommunity'), value: stats.resolved, icon: CheckCircle2, color: 'from-emerald-500 to-emerald-600', bgColor: 'bg-emerald-50' },
   ] : [];
 
   return (
@@ -136,9 +136,9 @@ export default function CommunityDashboard() {
         >
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
-              🤝 Community <span className="gradient-text">Dashboard</span>
+              🤝 {t('communityTitle').split(' ')[0]} <span className="gradient-text">{t('communityTitle').split(' ')[1] || ''}</span>
             </h1>
-            <p className="text-sm text-slate-500 mt-1">Verify, confirm, and monitor local civic grievances collectively</p>
+            <p className="text-sm text-slate-500 mt-1">{t('communityDesc')}</p>
           </div>
           <div>
             <button
@@ -147,7 +147,7 @@ export default function CommunityDashboard() {
               id="refresh-community-dashboard"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Feed
+              {t('refreshFeed')}
             </button>
           </div>
         </motion.div>
@@ -191,7 +191,7 @@ export default function CommunityDashboard() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by ID, issue category, or location..."
+                placeholder={t('searchPlaceholder')}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-trust-400 focus:ring-2 focus:ring-trust-100 outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
                 id="search-community-complaints"
               />
@@ -206,7 +206,7 @@ export default function CommunityDashboard() {
                 className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-trust-400 transition-all cursor-pointer"
                 id="community-filter-status"
               >
-                <option value="all">All Status</option>
+                <option value="all">{t('allStatus')}</option>
                 <option value="submitted">Submitted</option>
                 <option value="verified">Verified</option>
                 <option value="assigned">Assigned</option>
@@ -220,10 +220,10 @@ export default function CommunityDashboard() {
                 className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-trust-400 transition-all cursor-pointer"
                 id="community-filter-severity"
               >
-                <option value="all">All Severity</option>
-                <option value="high">🔴 High</option>
-                <option value="medium">🟠 Medium</option>
-                <option value="low">🟢 Low</option>
+                <option value="all">{t('allSeverity')}</option>
+                <option value="high">🔴 {t('highSeverity')}</option>
+                <option value="medium">🟠 {t('mediumSeverity')}</option>
+                <option value="low">🟢 {t('lowSeverity')}</option>
               </select>
             </div>
           </div>
@@ -265,7 +265,7 @@ export default function CommunityDashboard() {
                         {c.grievanceId}
                       </span>
                       <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${severityColors[c.aiSummary?.severity] || 'severity-medium'}`}>
-                        {c.aiSummary?.severity || 'medium'}
+                        {t(c.aiSummary?.severity + 'Severity') || c.aiSummary?.severity || 'medium'}
                       </span>
                     </div>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${statusColors[c.status] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
@@ -289,7 +289,7 @@ export default function CommunityDashboard() {
                     </span>
                     <span className="flex items-center gap-1 font-semibold text-emerald-600">
                       <ThumbsUp className="w-3.5 h-3.5" />
-                      {c.validations || 0} confirmations
+                      {c.validations || 0} {t('peopleConfirmedText').split(' ')[1] || 'confirmations'}
                     </span>
                   </div>
 
@@ -303,7 +303,7 @@ export default function CommunityDashboard() {
                     }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-trust-50 hover:bg-trust-100 text-trust-700 text-xs font-semibold transition-colors"
                   >
-                    <Eye className="w-3.5 h-3.5" /> View Details
+                    <Eye className="w-3.5 h-3.5" /> {t('details')}
                   </button>
                 </div>
               </motion.div>
@@ -345,7 +345,7 @@ export default function CommunityDashboard() {
                     <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                       <div className="flex items-center gap-1.5 mb-1">
                         <Tag className="w-4 h-4 text-trust-500" />
-                        <span className="text-[10px] text-slate-400 font-semibold uppercase">Category</span>
+                        <span className="text-[10px] text-slate-400 font-semibold uppercase">{t('originalComplaint')}</span>
                       </div>
                       <p className="text-sm font-bold text-slate-700">{selectedComplaint.aiSummary?.issueType || 'General Complaint'}</p>
                     </div>
@@ -353,7 +353,7 @@ export default function CommunityDashboard() {
                     <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                       <div className="flex items-center gap-1.5 mb-1">
                         <MapPin className="w-4 h-4 text-trust-500" />
-                        <span className="text-[10px] text-slate-400 font-semibold uppercase">Location</span>
+                        <span className="text-[10px] text-slate-400 font-semibold uppercase">{t('locationLabel')}</span>
                       </div>
                       <p className="text-sm font-bold text-slate-700">{selectedComplaint.location || 'Not Specified'}</p>
                     </div>
@@ -361,7 +361,7 @@ export default function CommunityDashboard() {
 
                   {/* AI summary text */}
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Issue Description</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">{t('descriptionLabel')}</h4>
                     <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
                       <p className="text-sm text-slate-600 leading-relaxed font-medium">
                         {selectedComplaint.aiSummary?.summary || selectedComplaint.originalText}
@@ -383,7 +383,7 @@ export default function CommunityDashboard() {
 
                   {/* Public timeline */}
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">📍 Status History</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">📍 {t('timelineTitle')}</h4>
                     <StatusTimeline
                       currentStatus={selectedComplaint.status}
                       statusHistory={selectedComplaint.statusHistory || []}
@@ -393,7 +393,7 @@ export default function CommunityDashboard() {
                   {/* Proof of Resolution Images */}
                   {selectedComplaint.proofImages && selectedComplaint.proofImages.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">📸 Resolution Proof</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">📸 {t('proofTitle')}</h4>
                       <div className="grid grid-cols-3 gap-2">
                         {selectedComplaint.proofImages.map((img, idx) => (
                           <img key={idx} src={img} alt={`Resolution Proof ${idx + 1}`} className="w-full h-24 object-cover rounded-xl border border-slate-200" />
@@ -417,7 +417,7 @@ export default function CommunityDashboard() {
                   {/* Admin Notes */}
                   {selectedComplaint.notes && selectedComplaint.notes.length > 0 && (
                     <div className="border-t border-slate-100 pt-4">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">📌 Official Updates</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">📌 {t('adminNotesTitle')}</h4>
                       <div className="space-y-2">
                         {selectedComplaint.notes.map((note, idx) => (
                           <div key={idx} className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs text-slate-600">
@@ -448,13 +448,13 @@ export default function CommunityDashboard() {
 
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                       <div>
-                        <p className="text-sm font-bold text-slate-700">Confirm this issue?</p>
+                        <p className="text-sm font-bold text-slate-700">{t('confirmIssueBtn')}?</p>
                         <p className="text-xs text-slate-400">Add weight to this grievance by confirming it affects your area.</p>
                       </div>
 
                       {validatedIds.includes(selectedComplaint.grievanceId) ? (
                         <span className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-800 text-sm font-bold">
-                          ✓ Confirmed
+                          ✓ {t('validatedBtn')}
                         </span>
                       ) : (
                         <div className="flex flex-wrap gap-2 justify-end">
@@ -478,7 +478,7 @@ export default function CommunityDashboard() {
                             className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-bold shadow-md disabled:opacity-50"
                           >
                             <ThumbsUp className="w-4 h-4" />
-                            {validating ? 'Confirming...' : 'Confirm Issue'}
+                            {validating ? `${t('searching')}...` : t('confirmIssueBtn')}
                           </button>
                         </div>
                       )}
